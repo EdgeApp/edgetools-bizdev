@@ -1,0 +1,23 @@
+# DigitalOcean App Platform spec — static-site deploy.
+#
+# Deploys only the public/ surface: landing and intake. No running process, and
+# no login. Use app.service.yaml instead when the gated /staff area is needed.
+#
+# Console setup: App Platform → Create App → GitHub → JP0P/edgetools-bizdev,
+# then choose resource type "Static Site", source dir "/public".
+
+name: edgetools-bizdev
+region: nyc
+
+static_sites:
+  - name: bizdev-public
+    github:
+      repo: JP0P/edgetools-bizdev
+      branch: main
+      deploy_on_push: true
+    source_dir: /public
+    catchall_document: index.html
+    routes:
+      - path: /
+
+# Attach the custom domain in the console. TLS is provisioned automatically.

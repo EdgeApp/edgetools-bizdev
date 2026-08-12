@@ -1,0 +1,40 @@
+# DigitalOcean App Platform spec — edgetools-bizdev.
+#
+# One small Node service serves BOTH surfaces:
+#   • public (open):  /, /intake/*, /styles.css
+#   • gated  (staff): /staff/*, /internal/*  (behind login)
+#
+# A single service is used rather than a static site plus a separate service,
+# because the auth gate requires a running process anyway and one component is
+# simpler to operate.
+#
+# Console setup: App Platform → Create App → GitHub → JP0P/edgetools-bizdev.
+# Node is auto-detected. Set the env vars below as ENCRYPTED secrets, then
+# attach the domain.
+
+name: edgetools-bizdev
+region: nyc
+
+services:
+  - name: bizdev
+    github:
+      repo: JP0P/edgetools-bizdev
+      branch: main
+      deploy_on_push: true
+    environment_slug: node-js
+    run_command: npm start
+    instance_size_slug: basic-xxs
+    instance_count: 1
+    http_port: 8080
+    routes:
+      - path: /
+    envs:
+      - key: STAFF_PASSWORD
+        scope: RUN_TIME
+        type: SECRET
+      - key: SESSION_SECRET
+        scope: RUN_TIME
+        type: SECRET
+
+# Custom domain: attach it in the DO console (or add a `domains:` block). TLS is
+# provisioned automatically.
